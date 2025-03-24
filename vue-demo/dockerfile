@@ -4,7 +4,7 @@ WORKDIR /app
 COPY vue-demo/package*.json ./
 RUN npm install
 
-COPY . .
+COPY vue-demo/* .
 # 假设构建命令为 npm run build
 RUN npm run build
 
