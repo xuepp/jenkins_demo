@@ -18,7 +18,7 @@ const decrement = () => {
 
 <template>
   <div class="counter">
-    <h1>Vue 3 计数器示例 v1 xpp 88887777xx</h1>
+    <h1>Vue 3 计数器示例 v1 xpp 888888</h1>
     <p>当前计数: {{ count }}</p>
     <button @click="increment">增加</button>
     <button @click="decrement">减少</button>
