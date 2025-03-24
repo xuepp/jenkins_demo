@@ -1,5 +1,10 @@
-stage('Stage Name') {
-  steps {
-    echo "当前目录：${pwd()}"
-  }
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                echo '在任意可用的节点上运行'
+            }
+        }
+    }
 }
