@@ -13,6 +13,8 @@ pipeline {
     stage('Build') {
       steps {
         script {
+          echo '当前路径'  
+          sh 'pwd'
           // 确保 Dockerfile 存在且路径正确
           docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "--progress=plain .")
         }
