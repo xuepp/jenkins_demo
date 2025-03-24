@@ -1,11 +1,10 @@
 pipeline {
     agent any
     stages {
-        stage('Example') {
+        stage('Hello') {
             steps {
-                echo '在任意可用的节点上运行'
+                echo 'Hello, Jenkins!'
             }
         }
     }
 }
-
