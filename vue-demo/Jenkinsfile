@@ -1,7 +1,6 @@
 pipeline {
   agent any
   environment {
-    //DOCKER_IMAGE = "your-docker-username/frontend-app"
     DOCKER_IMAGE = "vuedemo"
     DOCKER_TAG = "latest"
   }
@@ -9,29 +8,60 @@ pipeline {
     // 阶段1：拉取代码
     stage('Checkout') {
       steps {
-        //git branch: 'main', url: 'https://github.com/your-username/frontend-repo.git'
+        echo "🎯 开始拉取代码仓库..."
         git branch: 'main', url: 'https://github.com/xuepp/jenkins_demo.git'
+        echo "✅ 代码拉取完成！"
       }
     }
+    
     // 阶段2：构建 Docker 镜像
     stage('Build') {
       steps {
         script {
-          docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+          echo "🔨 开始构建 Docker 镜像..."
+          // 使用 --progress=plain 强制输出构建日志
+          docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "--progress=plain .")
+          echo "✅ 镜像构建成功！"
+          
+          // 可选：列出镜像验证
+          sh "docker images | grep ${DOCKER_IMAGE}"
         }
       }
     }
+    
     // 阶段3：运行容器
     stage('Deploy') {
       steps {
         script {
-          // 停止并删除旧容器
-          sh 'docker stop vuedemo || true'
-          sh 'docker rm vuedemo || true'
-          // 启动新容器
+          echo "🚀 开始部署容器..."
+          
+          // 停止旧容器（强制输出操作日志）
+          echo "⏹ 停止旧容器..."
+          sh '''
+            docker stop vuedemo || echo "没有正在运行的容器可停止"
+            docker rm vuedemo || echo "没有旧容器可删除"
+          '''
+          
+          // 启动新容器（带实时日志）
+          echo "🔄 启动新容器..."
           sh "docker run -d --name vuedemo -p 80:80 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+          
+          // 验证容器状态
+          echo "🔍 检查容器状态..."
+          sh "docker ps | grep vuedemo"
+          echo "✅ 部署完成！访问地址：http://YOUR_SERVER_IP"
         }
       }
+    }
+  }
+  
+  // 可选：全局日志增强
+  post {
+    always {
+      echo "📢 流水线执行状态：${currentBuild.result ?: 'SUCCESS'}"
+    }
+    failure {
+      echo "❌ 构建失败，请检查日志！"
     }
   }
 }
