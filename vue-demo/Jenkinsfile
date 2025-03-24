@@ -1,10 +1,31 @@
 pipeline {
-    agent any
-    stages {
-        stage('Hello') {
-            steps {
-                echo 'Hello, Jenkins!'
-            }
-        }
+  agent any
+  environment {
+    DOCKER_IMAGE = "vuedemo"
+    DOCKER_TAG = "latest"
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/xuepp/jenkins_demo.git'
+      }
     }
+    stage('Build') {
+      steps {
+        script {
+          // 确保 Dockerfile 存在且路径正确
+          docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "--progress=plain .")
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        script {
+          sh 'docker stop vuedemo || true'
+          sh 'docker rm vuedemo || true'
+          sh "docker run -d --name vuedemo -p 80:80 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+        }
+      }
+    }
+  }
 }
